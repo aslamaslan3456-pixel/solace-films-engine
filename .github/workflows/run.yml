@@ -1,1 +1,34 @@
+name: Run Stream Sniffer
+
+on:
+  workflow_dispatch: # Allows you to press a button to run it manually from your phone
+  schedule:
+    - cron: '0 */6 * * *' # Automatically runs every 6 hours in the cloud
+
+jobs:
+  sniff:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Allows the script to save the updated JSON back to your repo
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Run Sniffer Script
+        run: node sniffer.js
+
+      - name: Auto-Commit Database Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Cloud sniffer updated movies-db.json"
+          file_pattern: "movies-db.json"
 
